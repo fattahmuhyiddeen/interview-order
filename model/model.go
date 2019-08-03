@@ -2,7 +2,6 @@ package model
 
 import (
 	"database/sql"
-	"log"
 	"strconv"
 	"strings"
 	"time"
@@ -20,7 +19,6 @@ func TestConnection() bool {
 
 	query := `SELECT * FROM pg_catalog.pg_tables`
 	_, err := db.Query(query)
-	log.Println(err)
 
 	return err == nil
 }

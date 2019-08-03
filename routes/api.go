@@ -21,5 +21,10 @@ func APIRoutes() *echo.Echo {
 	api.GET("/timestamp", controller.Timestamp)
 	api.GET("/check_db", controller.CheckDB)
 
+	api.GET("/create", controller.CheckDB)
+	api.GET("/cancel", controller.CheckDB)
+	api.GET("/check", controller.CheckDB)
+	api.GET("/list_orders", controller.CheckDB)
+
 	return api
 }
