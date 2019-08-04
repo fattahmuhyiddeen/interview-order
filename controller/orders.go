@@ -27,13 +27,21 @@ func CheckOrder(c echo.Context) (err error) {
 	request := new(RequestOrder)
 	c.Bind(request)
 	order := model.ReadOrder(request.ID)
-	return c.JSON(http.StatusCreated, order)
+	return c.JSON(http.StatusOK, order)
 }
 
 //CancelOrder is to cancel order by id
 func CancelOrder(c echo.Context) (err error) {
 	request := new(RequestOrder)
 	c.Bind(request)
-	model.DeleteOrder(request.ID)
-	return c.JSON(http.StatusCreated, "order")
+	order := model.ReadOrder(request.ID)
+	order.State = "cancelled"
+	model.UpdateOrder(&order)
+	// model.DeleteOrder(request.ID)
+	return c.JSON(http.StatusOK, "order")
+}
+
+//ListOrders is to return list of orders
+func ListOrders(c echo.Context) (err error) {
+	return c.JSON(http.StatusOK, model.ReadOrders())
 }

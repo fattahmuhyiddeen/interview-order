@@ -51,9 +51,9 @@ func UpdateOrder(order *Order) {
 	connectDB()
 	defer disconnectDB()
 
-	order.CreatedAt = DateTimeNow()
+	order.UpdatedAt = DateTimeNow()
 
-	db.QueryRow(
+	err := db.QueryRow(
 		"UPDATE " + orderTable +
 			" SET user_id='" + strconv.Itoa(order.UserID) +
 			"', state='" + order.State +
@@ -62,6 +62,10 @@ func UpdateOrder(order *Order) {
 			"', frequency_update_order='" + strconv.Itoa(order.FrequencyUpdateOrder) +
 			"', updated_at='" + order.UpdatedAt +
 			"' WHERE id=" + strconv.Itoa(order.ID) + " AND deleted_at IS NULL")
+
+	if err != nil {
+		log.Println(err)
+	}
 }
 
 //ReadOrder is to get order by id
@@ -69,7 +73,7 @@ func ReadOrder(id int) (order Order) {
 	connectDB()
 	defer disconnectDB()
 
-	db.QueryRow("SELECT * FROM "+orderTable+" WHERE id=$1 AND deleted_at IS NULL", id).Scan(
+	db.QueryRow("SELECT id, "+orderFields+" FROM "+orderTable+" WHERE id=$1 AND deleted_at IS NULL", id).Scan(
 		&order.ID,
 		&order.UserID,
 		&order.State,
@@ -89,4 +93,35 @@ func DeleteOrder(id int) {
 	defer disconnectDB()
 
 	db.QueryRow("UPDATE " + orderTable + " SET deleted_at='" + DateTimeNow() + "' WHERE id=" + strconv.Itoa(id))
+}
+
+//ReadOrders return list of orders
+func ReadOrders() (orders []Order) {
+	connectDB()
+	defer disconnectDB()
+
+	rows, err := db.Query("SELECT id, " + orderFields + " FROM " + orderTable)
+	defer rows.Close()
+
+	if err == nil {
+		for rows.Next() {
+			tempOrder := new(Order)
+			rows.Scan(
+				&tempOrder.ID,
+				&tempOrder.UserID,
+				&tempOrder.State,
+				&tempOrder.ItemName,
+				&tempOrder.Price,
+				&tempOrder.FrequencyUpdateOrder,
+				&tempOrder.DeletedAt,
+				&tempOrder.CreatedAt,
+				&tempOrder.UpdatedAt,
+			)
+			log.Println(tempOrder)
+			log.Println(tempOrder)
+			log.Println(tempOrder)
+			orders = append(orders, *tempOrder)
+		}
+	}
+	return
 }
