@@ -61,7 +61,7 @@ func UpdateOrder(order *Order) {
 			"', price='" + strconv.Itoa(order.Price) +
 			"', frequency_update_order='" + strconv.Itoa(order.FrequencyUpdateOrder) +
 			"', updated_at='" + order.UpdatedAt +
-			"' WHERE id=" + strconv.Itoa(order.ID) + " deleted_at <> null")
+			"' WHERE id=" + strconv.Itoa(order.ID) + " AND deleted_at IS NULL")
 }
 
 //ReadOrder is to get order by id
@@ -69,8 +69,7 @@ func ReadOrder(id int) (order Order) {
 	connectDB()
 	defer disconnectDB()
 
-	row := db.QueryRow("SELECT id, "+orderFields+" FROM "+orderTable+" WHERE id=$1", id)
-	row.Scan(
+	db.QueryRow("SELECT * FROM "+orderTable+" WHERE id=$1 AND deleted_at IS NULL", id).Scan(
 		&order.ID,
 		&order.UserID,
 		&order.State,

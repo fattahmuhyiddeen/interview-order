@@ -22,8 +22,8 @@ func APIRoutes() *echo.Echo {
 	api.GET("/check_db", controller.CheckDB)
 
 	api.POST("/create_order", controller.CreateOrder)
-	api.GET("/cancel_order", controller.CheckDB)
-	api.GET("/check_order", controller.CheckDB)
+	api.DELETE("/cancel_order", controller.CancelOrder)
+	api.GET("/check_order", controller.CheckOrder)
 	api.GET("/list_orders", controller.CheckDB)
 
 	return api

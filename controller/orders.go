@@ -8,11 +8,32 @@ import (
 	"github.com/labstack/echo"
 )
 
+//RequestOrder is request struct of order
+type RequestOrder struct {
+	model.Order
+}
+
 //CreateOrder is to create new order
 func CreateOrder(c echo.Context) (err error) {
 	order := new(model.Order)
 	c.Bind(order)
+	order.State = "pending"
 	model.CreateOrder(order)
 	return c.JSON(http.StatusCreated, order)
+}
 
+//CheckOrder is to get order by id
+func CheckOrder(c echo.Context) (err error) {
+	request := new(RequestOrder)
+	c.Bind(request)
+	order := model.ReadOrder(request.ID)
+	return c.JSON(http.StatusCreated, order)
+}
+
+//CancelOrder is to cancel order by id
+func CancelOrder(c echo.Context) (err error) {
+	request := new(RequestOrder)
+	c.Bind(request)
+	model.DeleteOrder(request.ID)
+	return c.JSON(http.StatusCreated, "order")
 }
