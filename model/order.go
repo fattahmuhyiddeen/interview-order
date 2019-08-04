@@ -1,6 +1,7 @@
 package model
 
 import (
+	"log"
 	"strconv"
 )
 
@@ -28,17 +29,21 @@ func CreateOrder(order *Order) {
 	order.CreatedAt = DateTimeNow()
 	order.UpdatedAt = order.CreatedAt
 
-	db.QueryRow(
+	err := db.QueryRow(
 		"INSERT INTO "+orderTable+" ("+orderFields+") VALUES ("+tablePlaceholder(orderFields)+") RETURNING id",
 		order.UserID,
 		order.State,
 		order.ItemName,
 		order.Price,
 		order.FrequencyUpdateOrder,
-		order.DeletedAt,
+		nil,
 		order.CreatedAt,
 		order.UpdatedAt,
 	).Scan(&order.ID)
+
+	if err != nil {
+		log.Println(err)
+	}
 }
 
 //UpdateOrder updates an order in orders table
