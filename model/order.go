@@ -51,16 +51,14 @@ func UpdateOrder(order *Order) {
 	connectDB()
 	defer disconnectDB()
 
-	order.UpdatedAt = DateTimeNow()
-
 	err := db.QueryRow(
 		"UPDATE " + orderTable +
 			" SET user_id='" + strconv.Itoa(order.UserID) +
 			"', state='" + order.State +
 			"', item_name='" + order.ItemName +
 			"', price='" + strconv.Itoa(order.Price) +
-			"', frequency_update_order='" + strconv.Itoa(order.FrequencyUpdateOrder) +
-			"', updated_at='" + order.UpdatedAt +
+			// "', frequency_update_order='" + strconv.Itoa(order.FrequencyUpdateOrder) +
+			"', updated_at='" + DateTimeNow() +
 			"' WHERE id=" + strconv.Itoa(order.ID) + " AND deleted_at IS NULL")
 
 	if err != nil {

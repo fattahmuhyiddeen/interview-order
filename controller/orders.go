@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	model "github.com/fattahmuhyiddeen/interview-order/model"
+	service "github.com/fattahmuhyiddeen/interview-order/service"
 
 	"github.com/labstack/echo"
 )
@@ -19,6 +20,7 @@ func CreateOrder(c echo.Context) (err error) {
 	c.Bind(order)
 	order.State = "confirmed"
 	model.CreateOrder(order)
+	go service.CheckPayment(order)
 	return c.JSON(http.StatusCreated, order)
 }
 
