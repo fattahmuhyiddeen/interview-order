@@ -100,7 +100,7 @@ func ReadOrders() (orders []Order) {
 	connectDB()
 	defer disconnectDB()
 
-	rows, err := db.Query("SELECT id, " + orderFields + " FROM " + orderTable)
+	rows, err := db.Query("SELECT id, " + orderFields + " FROM " + orderTable + " ORDER BY created_at")
 	defer rows.Close()
 
 	if err == nil {
@@ -117,9 +117,6 @@ func ReadOrders() (orders []Order) {
 				&tempOrder.CreatedAt,
 				&tempOrder.UpdatedAt,
 			)
-			log.Println(tempOrder)
-			log.Println(tempOrder)
-			log.Println(tempOrder)
 			orders = append(orders, *tempOrder)
 		}
 	}
