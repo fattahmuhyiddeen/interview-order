@@ -12,6 +12,7 @@ func APIRoutes() *echo.Echo {
 	api.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"*"},
 		AllowHeaders: []string{"*"},
+		AllowMethods: []string{"*"},
 	}))
 
 	api.Use(middleware.Recover())
