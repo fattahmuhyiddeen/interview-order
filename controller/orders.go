@@ -17,7 +17,7 @@ type RequestOrder struct {
 func CreateOrder(c echo.Context) (err error) {
 	order := new(model.Order)
 	c.Bind(order)
-	order.State = "pending"
+	order.State = "confirmed"
 	model.CreateOrder(order)
 	return c.JSON(http.StatusCreated, order)
 }
