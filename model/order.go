@@ -38,7 +38,6 @@ func CreateOrder(order *Order) {
 		order.ItemName,
 		order.Price,
 		order.FrequencyUpdateOrder,
-		nil,
 		order.CreatedAt.Format(config.DateTimeFormat),
 		order.UpdatedAt.Format(config.DateTimeFormat),
 	).Scan(&order.ID)
