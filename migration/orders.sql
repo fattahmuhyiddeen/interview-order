@@ -10,7 +10,6 @@ CREATE TABLE "public"."orders" (
   "item_name" VARCHAR(80),
   "price" NUMERIC,
   "frequency_update_order" NUMERIC,
-  "deleted_at" TIMESTAMP,
   "created_at" TIMESTAMP,
   "updated_at" TIMESTAMP
 );

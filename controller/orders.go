@@ -39,7 +39,6 @@ func CancelOrder(c echo.Context) (err error) {
 	order := model.ReadOrder(request.ID)
 	order.State = "cancelled"
 	model.UpdateOrder(&order)
-	// model.DeleteOrder(request.ID)
 	return c.JSON(http.StatusOK, "order")
 }
 

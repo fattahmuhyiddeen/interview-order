@@ -3,23 +3,25 @@ package model
 import (
 	"log"
 	"strconv"
+	"time"
+
+	config "github.com/fattahmuhyiddeen/interview-order/config"
 )
 
 //Order is a model
 type Order struct {
-	ID                   int    `json:"id" form:"id"`
-	UserID               int    `json:"user_id" form:"user_id"`
-	State                string `json:"state" form:"state"`
-	ItemName             string `json:"item_name" form:"item_name"`
-	Price                int    `json:"price" form:"price"`
-	FrequencyUpdateOrder int    `json:"frequency_update_order" form:"frequency_update_order"`
-	DeletedAt            string `json:"deleted_at" form:"deleted_at"`
-	CreatedAt            string `json:"created_at" form:"created_at"`
-	UpdatedAt            string `json:"updated_at" form:"updated_at"`
+	ID                   int       `json:"id" form:"id"`
+	UserID               int       `json:"user_id" form:"user_id"`
+	State                string    `json:"state" form:"state"`
+	ItemName             string    `json:"item_name" form:"item_name"`
+	Price                int       `json:"price" form:"price"`
+	FrequencyUpdateOrder int       `json:"frequency_update_order" form:"frequency_update_order"`
+	CreatedAt            time.Time `json:"created_at" form:"created_at"`
+	UpdatedAt            time.Time `json:"updated_at" form:"updated_at"`
 }
 
 const orderTable = "orders"
-const orderFields = "user_id, state, item_name, price, frequency_update_order, deleted_at, created_at, updated_at"
+const orderFields = "user_id, state, item_name, price, frequency_update_order, created_at, updated_at"
 
 //CreateOrder inserts a new order into orders table
 func CreateOrder(order *Order) {
@@ -37,8 +39,8 @@ func CreateOrder(order *Order) {
 		order.Price,
 		order.FrequencyUpdateOrder,
 		nil,
-		order.CreatedAt,
-		order.UpdatedAt,
+		order.CreatedAt.Format(config.DateTimeFormat),
+		order.UpdatedAt.Format(config.DateTimeFormat),
 	).Scan(&order.ID)
 
 	if err != nil {
@@ -58,8 +60,8 @@ func UpdateOrder(order *Order) {
 			"', item_name='" + order.ItemName +
 			"', price='" + strconv.Itoa(order.Price) +
 			// "', frequency_update_order='" + strconv.Itoa(order.FrequencyUpdateOrder) +
-			"', updated_at='" + DateTimeNow() +
-			"' WHERE id=" + strconv.Itoa(order.ID) + " AND deleted_at IS NULL")
+			"', updated_at='" + DateTimeNow().Format(config.DateTimeFormat) +
+			"' WHERE id=" + strconv.Itoa(order.ID))
 
 	if err != nil {
 		log.Println(err)
@@ -71,26 +73,17 @@ func ReadOrder(id int) (order Order) {
 	connectDB()
 	defer disconnectDB()
 
-	db.QueryRow("SELECT id, "+orderFields+" FROM "+orderTable+" WHERE id=$1 AND deleted_at IS NULL", id).Scan(
+	db.QueryRow("SELECT id, "+orderFields+" FROM "+orderTable+" WHERE id=$1", id).Scan(
 		&order.ID,
 		&order.UserID,
 		&order.State,
 		&order.ItemName,
 		&order.Price,
 		&order.FrequencyUpdateOrder,
-		&order.DeletedAt,
 		&order.CreatedAt,
 		&order.UpdatedAt,
 	)
 	return
-}
-
-//DeleteOrder by id
-func DeleteOrder(id int) {
-	connectDB()
-	defer disconnectDB()
-
-	db.QueryRow("UPDATE " + orderTable + " SET deleted_at='" + DateTimeNow() + "' WHERE id=" + strconv.Itoa(id))
 }
 
 //UpdateAfterPayment is to either decline/deliver order after payment result
@@ -118,7 +111,6 @@ func ReadOrders() (orders []Order) {
 				&tempOrder.ItemName,
 				&tempOrder.Price,
 				&tempOrder.FrequencyUpdateOrder,
-				&tempOrder.DeletedAt,
 				&tempOrder.CreatedAt,
 				&tempOrder.UpdatedAt,
 			)
