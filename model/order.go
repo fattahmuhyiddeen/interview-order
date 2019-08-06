@@ -105,7 +105,7 @@ func ReadOrders() (orders []Order) {
 	connectDB()
 	defer disconnectDB()
 
-	rows, err := db.Query("SELECT id, " + orderFields + " FROM " + orderTable + " ORDER BY created_at")
+	rows, err := db.Query("SELECT id, " + orderFields + " FROM " + orderTable + " ORDER BY id")
 	defer rows.Close()
 
 	if err == nil {
