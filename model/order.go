@@ -93,6 +93,13 @@ func DeleteOrder(id int) {
 	db.QueryRow("UPDATE " + orderTable + " SET deleted_at='" + DateTimeNow() + "' WHERE id=" + strconv.Itoa(id))
 }
 
+//UpdateAfterPayment is to either decline/deliver order after payment result
+func UpdateAfterPayment(id int, state string) {
+	connectDB()
+	defer disconnectDB()
+	db.QueryRow("UPDATE " + orderTable + " SET state='" + state + "' WHERE id=" + strconv.Itoa(id) + " AND state<>'cancelled'")
+}
+
 //ReadOrders return list of orders
 func ReadOrders() (orders []Order) {
 	connectDB()
